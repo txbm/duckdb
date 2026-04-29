@@ -113,6 +113,8 @@ static const ConfigurationOption internal_options[] = {
     DUCKDB_GLOBAL(DefaultSecretStorageSetting),
     DUCKDB_SETTING_CALLBACK(DeprecatedUsingKeySyntaxSetting),
     DUCKDB_SETTING_CALLBACK(DisableDatabaseInvalidationSetting),
+    DUCKDB_SETTING(DisableJsonValidationSetting),
+    DUCKDB_SETTING(DisableParquetJsonValidationSetting),
     DUCKDB_SETTING(DisableTimestamptzCastsSetting),
     DUCKDB_GLOBAL(DisabledCompressionMethodsSetting),
     DUCKDB_GLOBAL(DisabledFilesystemsSetting),
@@ -205,15 +207,14 @@ static const ConfigurationOption internal_options[] = {
     DUCKDB_SETTING(WalAutocheckpointEntriesSetting),
     DUCKDB_SETTING_CALLBACK(WarningsAsErrorsSetting),
     DUCKDB_SETTING(WriteBufferRowGroupCountSetting),
-    DUCKDB_SETTING(ZstdMinStringLengthSetting),
-    FINAL_SETTING};
+    DUCKDB_SETTING(ZstdMinStringLengthSetting),    FINAL_SETTING};
 
-static const ConfigurationAlias setting_aliases[] = {DUCKDB_SETTING_ALIAS("memory_limit", 99),
-                                                     DUCKDB_SETTING_ALIAS("null_order", 43),
-                                                     DUCKDB_SETTING_ALIAS("profiling_output", 118),
-                                                     DUCKDB_SETTING_ALIAS("user", 133),
-                                                     DUCKDB_SETTING_ALIAS("wal_autocheckpoint", 25),
-                                                     DUCKDB_SETTING_ALIAS("worker_threads", 132),
+static const ConfigurationAlias setting_aliases[] = {DUCKDB_SETTING_ALIAS("memory_limit", 101),
+    DUCKDB_SETTING_ALIAS("null_order", 43),
+    DUCKDB_SETTING_ALIAS("profiling_output", 120),
+    DUCKDB_SETTING_ALIAS("user", 135),
+    DUCKDB_SETTING_ALIAS("wal_autocheckpoint", 25),
+    DUCKDB_SETTING_ALIAS("worker_threads", 134),
                                                      FINAL_ALIAS};
 
 vector<ConfigurationOption> DBConfig::GetOptions() {

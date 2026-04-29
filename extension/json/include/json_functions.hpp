@@ -64,6 +64,7 @@ public:
 
 public:
 	shared_ptr<JSONAllocator> json_allocator;
+	bool validate_json = true;
 };
 
 class JSONFunctions {

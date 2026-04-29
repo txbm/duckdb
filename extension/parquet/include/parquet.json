@@ -109,6 +109,13 @@
         "type": "bool",
         "default": "false",
         "property": "parquet_options.can_have_nan"
+      },
+      {
+        "id": 108,
+        "name": "validate_json",
+        "type": "bool",
+        "default": "true",
+        "property": "parquet_options.validate_json"
       }
     ],
     "pointer_type": "none"

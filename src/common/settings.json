@@ -395,6 +395,20 @@
         ]
     },
     {
+        "name": "disable_json_validation",
+        "description": "Disable JSON validation for VARCHAR to JSON casts.",
+        "type": "BOOLEAN",
+        "scope": "global",
+        "default_value": "false"
+    },
+    {
+        "name": "disable_parquet_json_validation",
+        "description": "Disable JSON validation for JSON logical types read from Parquet.",
+        "type": "BOOLEAN",
+        "scope": "global",
+        "default_value": "false"
+    },
+    {
         "name": "disable_timestamptz_casts",
         "description": "Disable casting from timestamp to timestamptz ",
         "type": "BOOLEAN",

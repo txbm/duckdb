@@ -2,6 +2,7 @@
 
 #include "duckdb/common/file_system.hpp"
 #include "duckdb/execution/expression_executor.hpp"
+#include "duckdb/main/client_context.hpp"
 #include "duckdb/function/cast/cast_function_set.hpp"
 #include "duckdb/function/cast/default_casts.hpp"
 #include "duckdb/function/replacement_scan.hpp"
@@ -122,7 +123,7 @@ unique_ptr<FunctionData> JSONReadManyFunctionData::Bind(ClientContext &context, 
 }
 
 JSONFunctionLocalState::JSONFunctionLocalState(Allocator &allocator)
-    : json_allocator(make_shared_ptr<JSONAllocator>(allocator)) {
+    : json_allocator(make_shared_ptr<JSONAllocator>(allocator)), validate_json(true) {
 }
 
 JSONFunctionLocalState::JSONFunctionLocalState(ClientContext &context)
@@ -135,8 +136,15 @@ unique_ptr<FunctionLocalState> JSONFunctionLocalState::Init(ExpressionState &sta
 }
 
 unique_ptr<FunctionLocalState> JSONFunctionLocalState::InitCastLocalState(CastLocalStateParameters &parameters) {
-	return parameters.context ? make_uniq<JSONFunctionLocalState>(*parameters.context)
-	                          : make_uniq<JSONFunctionLocalState>(Allocator::DefaultAllocator());
+	auto state = parameters.context ? make_uniq<JSONFunctionLocalState>(*parameters.context)
+	                               : make_uniq<JSONFunctionLocalState>(Allocator::DefaultAllocator());
+	if (parameters.context) {
+		Value setting_value;
+		if (parameters.context->TryGetCurrentSetting("disable_json_validation", setting_value)) {
+			state->validate_json = !BooleanValue::Get(setting_value);
+		}
+	}
+	return state;
 }
 
 JSONFunctionLocalState &JSONFunctionLocalState::ResetAndGet(ExpressionState &state) {
@@ -234,6 +242,12 @@ unique_ptr<TableRef> JSONFunctions::ReadJSONReplacement(ClientContext &context, 
 static bool CastVarcharToJSON(Vector &source, Vector &result, idx_t count, CastParameters &parameters) {
 	auto &lstate = parameters.local_state->Cast<JSONFunctionLocalState>();
 	lstate.json_allocator->Reset();
+	if (!lstate.validate_json) {
+		UnaryExecutor::ExecuteWithNulls<string_t, string_t>(
+		    source, result, count, [](string_t input, ValidityMask &, idx_t) { return input; });
+		StringVector::AddHeapReference(result, source);
+		return true;
+	}
 	auto alc = lstate.json_allocator->GetYYAlc();
 
 	bool success = true;

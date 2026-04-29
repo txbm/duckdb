@@ -4,6 +4,7 @@
 #include "json_functions.hpp"
 
 #include "duckdb/catalog/catalog_entry/macro_catalog_entry.hpp"
+#include "duckdb/main/config.hpp"
 #include "duckdb/catalog/default/default_functions.hpp"
 #include "duckdb/function/copy_function.hpp"
 #include "duckdb/main/extension/extension_loader.hpp"
@@ -57,9 +58,8 @@ static void LoadInternal(ExtensionLoader &loader) {
 	}
 
 	// JSON replacement scan
-	DBConfig::GetConfig(loader.GetDatabaseInstance())
-	    .replacement_scans.emplace_back(JSONFunctions::ReadJSONReplacement);
-
+	auto &db_settings = DBConfig::GetConfig(loader.GetDatabaseInstance());
+	db_settings.replacement_scans.emplace_back(JSONFunctions::ReadJSONReplacement);
 	// JSON copy function
 	auto copy_fun = JSONFunctions::GetJSONCopyFunction();
 	loader.RegisterFunction(copy_fun);
