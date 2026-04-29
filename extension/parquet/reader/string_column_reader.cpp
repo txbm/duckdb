@@ -45,6 +45,9 @@ void StringColumnReader::VerifyString(const char *str_data, uint32_t str_len) co
 		VerifyString(str_data, str_len, true);
 		break;
 	case StringColumnType::JSON: {
+		if (!reader.parquet_options.validate_json) {
+			break;
+		}
 		const auto error = StringUtil::ValidateJSON(str_data, str_len);
 		if (!error.empty()) {
 			throw InvalidInputException("Invalid JSON found in Parquet file: %s", error);
