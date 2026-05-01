@@ -299,6 +299,7 @@ private:
 	                                  idx_t approved_tuple_count) {
 		auto result_ptr = FlatVector::GetDataMutable<VALUE_TYPE>(result);
 		auto &result_mask = FlatVector::ValidityMutable(result);
+		result_mask.SetAllInvalid(num_values);
 		idx_t current_entry = 0;
 		for (idx_t i = 0; i < approved_tuple_count; i++) {
 			auto next_entry = sel.get_index(i);
@@ -311,6 +312,7 @@ private:
 				result_mask.SetInvalid(next_entry);
 			} else {
 				result_ptr[next_entry] = CONVERSION::template PlainRead<CHECKED>(plain_data, *this);
+				result_mask.SetValid(next_entry);
 			}
 			current_entry = next_entry + 1;
 		}

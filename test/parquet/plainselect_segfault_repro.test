@@ -1,0 +1,48 @@
+# name: test/parquet/plainselect_segfault_repro.test
+# description: Reproduce PlainSelect validity issue on dictionary vectors
+# group: [parquet]
+
+require parquet
+
+statement ok
+PRAGMA threads=1;
+
+statement ok
+CREATE TABLE events_ref AS
+SELECT i::BIGINT AS i,
+       printf('%06d', i) AS s
+FROM range(110000) t(i);
+
+statement ok
+COPY events_ref TO '{TEST_DIR}/plainselect_parquet'
+  (FORMAT PARQUET, ROW_GROUP_SIZE 2048, ROW_GROUPS_PER_FILE 1, DICTIONARY_SIZE_LIMIT 0, OVERWRITE_OR_IGNORE 1);
+
+statement ok
+CREATE TEMP TABLE poison AS
+SELECT repeat('x', 200) AS s
+FROM range(2048);
+
+query I
+SELECT sum(length(s)) FROM poison
+----
+409600
+
+query I
+WITH scan AS (
+  SELECT i, s
+  FROM parquet_scan('{TEST_DIR}/plainselect_parquet/*.parquet')
+  WHERE i = 42 AND s >= '000000'
+),
+ref AS (
+  SELECT i, s FROM events_ref WHERE i = 42
+)
+SELECT count(*) FROM range(200) r
+JOIN LATERAL (
+  SELECT count(*) FROM (
+    (SELECT s FROM scan)
+    EXCEPT ALL
+    (SELECT s FROM ref)
+  )
+) q ON true;
+----
+200
