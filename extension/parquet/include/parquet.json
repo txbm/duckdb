@@ -116,6 +116,13 @@
         "type": "bool",
         "default": "true",
         "property": "parquet_options.validate_json"
+      },
+      {
+        "id": 109,
+        "name": "validate_utf8",
+        "type": "bool",
+        "default": "true",
+        "property": "parquet_options.validate_utf8"
       }
     ],
     "pointer_type": "none"

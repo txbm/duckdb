@@ -42,6 +42,9 @@ void StringColumnReader::VerifyString(const char *str_data, uint32_t str_len, co
 void StringColumnReader::VerifyString(const char *str_data, uint32_t str_len) const {
 	switch (string_column_type) {
 	case StringColumnType::VARCHAR:
+		if (!reader.parquet_options.validate_utf8) {
+			break;
+		}
 		VerifyString(str_data, str_len, true);
 		break;
 	case StringColumnType::JSON: {

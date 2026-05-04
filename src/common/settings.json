@@ -409,6 +409,13 @@
         "default_value": "false"
     },
     {
+        "name": "disable_parquet_utf8_validation",
+        "description": "Disable UTF-8 validation for VARCHAR columns read from Parquet.",
+        "type": "BOOLEAN",
+        "scope": "global",
+        "default_value": "false"
+    },
+    {
         "name": "disable_timestamptz_casts",
         "description": "Disable casting from timestamp to timestamptz ",
         "type": "BOOLEAN",
