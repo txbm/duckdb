@@ -109,6 +109,13 @@
         "type": "bool",
         "default": "false",
         "property": "parquet_options.can_have_nan"
+      },
+      {
+        "id": 109,
+        "name": "validate_utf8",
+        "type": "bool",
+        "default": "true",
+        "property": "parquet_options.validate_utf8"
       }
     ],
     "pointer_type": "none"
